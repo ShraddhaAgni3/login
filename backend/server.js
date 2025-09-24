@@ -3,22 +3,42 @@ import cors from "cors";
 import pkg from "pg";
 import dotenv from "dotenv";
 
-dotenv.config(); // load .env
+dotenv.config(); // load .env file
 const { Pool } = pkg;
 
 const app = express();
-app.use(cors());
+
+// ✅ Allowed origins
+const allowedOrigins = [
+  "http://localhost:5173",                  // local React (Vite) dev
+  "https://login-brown-kappa-37.vercel.app" // deployed frontend on Vercel
+];
+
+// ✅ CORS config
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
+
 app.use(express.json());
 
-// Check if URL is Render's external (needs SSL)
+// Check if using Render external DB (needs SSL)
 const isExternal = process.env.DATABASE_URL?.includes("render.com");
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: isExternal ? { rejectUnauthorized: false } : false,
+  ssl: isExternal ? { rejectUnauthorized: false } : false
 });
 
-// ✅ Test DB connection at startup
+// ✅ Test DB connection
 pool.connect()
   .then(client => {
     console.log("✅ Connected to Postgres!");
@@ -26,12 +46,12 @@ pool.connect()
   })
   .catch(err => console.error("❌ Database connection failed:", err));
 
-// Health check route
+// Simple health route
 app.get("/", (req, res) => {
   res.send("✅ Backend is running!");
 });
 
-// Login route
+// Login API
 app.post("/api/login", async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -51,6 +71,6 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-// Use process.env.PORT for Render
+// ✅ Use PORT from Render
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
