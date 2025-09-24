@@ -9,11 +9,15 @@ export default function App() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("https://login-4kfe.onrender.com/api/login", {
+      // ✅ pick from env instead of hardcoding
+      const API_URL = import.meta.env.VITE_API_URL;
+
+      const res = await fetch(`${API_URL}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
+
       const data = await res.json();
       setMessage(data.message);
       setSuccess(data.success);
@@ -26,10 +30,10 @@ export default function App() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
       <div className="bg-white p-8 rounded-2xl shadow-2xl w-96">
-
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
           Welcome Back
         </h2>
+
         <form onSubmit={handleLogin} className="space-y-4">
           <input
             type="text"
