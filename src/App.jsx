@@ -9,7 +9,6 @@ export default function App() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      // ✅ pick from env instead of hardcoding
       const API_URL = import.meta.env.VITE_API_URL;
 
       const res = await fetch(`${API_URL}/api/login`, {
