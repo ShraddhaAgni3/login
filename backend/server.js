@@ -2,19 +2,18 @@ import express from "express";
 import cors from "cors";
 import pkg from "pg";
 const { Pool } = pkg;
-import dotenv from "dotenv";
-dotenv.config();
-
 
 const app = express();
 app.use(cors()); 
 app.use(express.json());
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
+  user: "postgres",      
+  host: "localhost",
+  database: "login",
+  password: "123456",
+  port: 5432,
 });
-
 
 app.post("/api/login", async (req, res) => {
   const { username, password } = req.body;
