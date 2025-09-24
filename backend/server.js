@@ -4,11 +4,11 @@ import pkg from "pg";
 const { Pool } = pkg;
 
 const app = express();
-app.use(cors()); // or app.use(cors({ origin: "http://localhost:5173" }));
+app.use(cors()); 
 app.use(express.json());
 
 const pool = new Pool({
-  user: "postgres",      // change to your values
+  user: "postgres",      
   host: "localhost",
   database: "login",
   password: "123456",
